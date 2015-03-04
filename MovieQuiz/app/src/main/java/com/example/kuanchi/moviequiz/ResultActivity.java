@@ -44,4 +44,11 @@ public class ResultActivity extends Activity
         Intent intent = new Intent(ResultActivity.this, MainActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 }
