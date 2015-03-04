@@ -18,6 +18,7 @@
         android:layout_marginTop="250dp"
         android:layout_centerHorizontal="true"
         android:text = "Choice"
+        android:onClick="checkAnswer"
         android:tag ="c1"/>
 
     <Button
@@ -26,6 +27,7 @@
         android:id="@+id/choice2"
         android:layout_marginTop="300dp"
         android:layout_centerHorizontal="true"
+        android:onClick="checkAnswer"
         android:text = "Choice"
         android:tag ="c2"/>
 
@@ -35,6 +37,7 @@
         android:id="@+id/choice3"
         android:layout_marginTop="350dp"
         android:layout_centerHorizontal="true"
+        android:onClick="checkAnswer"
         android:text = "Choice"
         android:tag ="c3"/>
 
@@ -44,14 +47,17 @@
         android:id="@+id/choice4"
         android:layout_marginTop="400dp"
         android:text = "Choice"
+        android:onClick="checkAnswer"
         android:layout_centerHorizontal="true"
         android:tag ="c4"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="450dp"
-        android:id = "@+id/result"/>
+        android:layout_marginTop="480dp"
+        android:textSize="20dp"
+        android:id = "@+id/result"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:layout_width="wrap_content"

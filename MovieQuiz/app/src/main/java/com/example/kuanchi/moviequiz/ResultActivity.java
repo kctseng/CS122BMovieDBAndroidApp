@@ -31,7 +31,7 @@ public class ResultActivity extends Activity
 
         if(total!=0) {
             ((TextView) findViewById(R.id.result)).setText("You Got " + correct + "/" + total + " Correct!");
-            ((TextView) findViewById(R.id.percent)).setText("Score: " + correct / total + "%");
+            ((TextView) findViewById(R.id.percent)).setText("Score: " + ((double)correct / (double)total)*100 + "/100");
         }
         else
         {
