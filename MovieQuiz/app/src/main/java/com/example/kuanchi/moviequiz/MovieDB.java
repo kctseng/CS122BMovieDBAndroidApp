@@ -80,4 +80,14 @@ public class MovieDB extends SQLiteOpenHelper
     public Cursor fetchAll() {
         return db.query(TABLE_NAME, columnNames, null, null, null, null, null);
     }
+
+    public Cursor groupByStar()
+    {
+        return db.rawQuery("select * from movieinfo order by starFirstName, starLastName asc", null);
+    }
+
+    public Cursor groupByMovie()
+    {
+        return db.rawQuery("select * from movieinfo order by movietitle asc", null);
+    }
 }

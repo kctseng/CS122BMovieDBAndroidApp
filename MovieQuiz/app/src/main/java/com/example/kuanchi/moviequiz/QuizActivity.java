@@ -22,7 +22,7 @@ public class QuizActivity extends Activity
     int correct = 0;
     int wrong = 0;
     int totalQ = 0;
-
+    MovieDB db;
     int cursorCount = 0;
     ArrayList<Button> choicesList = new ArrayList<Button>();
     Cursor cursor;
@@ -31,7 +31,7 @@ public class QuizActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
-        MovieDB db = new MovieDB(this);
+        db = new MovieDB(this);
         q = (TextView)findViewById(R.id.question);
         Button b1 = (Button)findViewById(R.id.choice1);
         Button b2 = (Button)findViewById(R.id.choice2);
@@ -50,57 +50,281 @@ public class QuizActivity extends Activity
     private void generateQuestionAndChoices()
     {
         Random random = new Random();
-        int format = random.nextInt(2);
+        int format = random.nextInt(8);
         int position = random.nextInt(cursorCount);
         correctAnswer = random.nextInt(4);
         switch(format)
         {
             case 0:
-                q.setText("Who directed the movie " + cursor.getString(2) + "?");
-                int originalPos = cursor.getPosition();
-                for(int i = 0; i<4; i++)
-                {
-                    if(i==correctAnswer)
-                    {
-                        cursor.moveToPosition(originalPos);
-                        choicesList.get(i).setText(cursor.getString(4).replace("\"", ""));
-                    }
-                    else
-                    {
-                        cursor.moveToPosition(cursor.getPosition()+20);
-                        choicesList.get(i).setText(cursor.getString(4).replace("\"",""));
-                    }
-                }
+                question0();
                 cursor.moveToPosition(position);
                 break;
             case 1:
-                q.setText("When was the movie " + cursor.getString(2) + " released?");
-                for(int i = 0; i<4; i++)
-                {
-                    if(i==correctAnswer)
-                    {
-                        choicesList.get(i).setText(String.valueOf(cursor.getInt(3)));
-                    }
-                    else
-                    {
-                        choicesList.get(i).setText(String.valueOf(cursor.getInt(3)+1+i));
-                    }
-                }
+                question1();
                 cursor.moveToPosition(position);
                 break;
             case 2:
-
+                question2();
+                cursor.moveToPosition(position);
                 break;
             case 3:
+                question3();
+                cursor.moveToPosition(position);
                 break;
             case 4:
+                question4();
+                cursor.moveToPosition(position);
                 break;
             case 5:
+                question5();
+                cursor.moveToPosition(position);
                 break;
             case 6:
+                question6();
+                cursor.moveToPosition(position);
                 break;
             case 7:
+                question7();
+                cursor.moveToPosition(position);
                 break;
+        }
+    }
+
+
+
+    private void question0()
+    {
+        q.setText("Who directed the movie " + cursor.getString(2) + "?");
+        int originalPos = cursor.getPosition();
+        for(int i = 0; i<4; i++)
+        {
+            if(i==correctAnswer)
+            {
+                cursor.moveToPosition(originalPos);
+            }
+            else
+            {
+                if(cursor.getPosition()+20 > cursorCount)
+                {
+                    cursor.move(-200);
+                }
+                cursor.moveToPosition(cursor.getPosition()+20);
+            }
+            choicesList.get(i).setText(cursor.getString(4).replace("\"",""));
+        }
+    }
+
+    private void question1()
+    {
+        q.setText("When was the movie " + cursor.getString(2) + " released?");
+        for(int i = 0; i<4; i++)
+        {
+            if(i==correctAnswer)
+            {
+                choicesList.get(i).setText(String.valueOf(cursor.getInt(3)));
+            }
+            else
+            {
+                choicesList.get(i).setText(String.valueOf(cursor.getInt(3)+1+i));
+            }
+        }
+    }
+
+    private void question2()
+    {
+        q.setText("Which star was in the movie " + cursor.getString(2) + "?");
+        int originalPos = cursor.getPosition();
+        for(int i = 0; i<4; i++)
+        {
+            if(i==correctAnswer)
+            {
+                cursor.moveToPosition(originalPos);
+            }
+            else
+            {
+                if(cursor.getPosition()+20 > cursorCount)
+                {
+                    cursor.move(-200);
+                }
+                cursor.moveToPosition(cursor.getPosition()+20);
+            }
+            choicesList.get(i).setText(cursor.getString(5).replace("\"", "")+" " + cursor.getString(6).replace("\"", ""));
+        }
+    }
+
+    private void question3()
+    {
+        String starA = "";
+        String starB = "";
+        String movie = cursor.getString(2);
+        while(true)
+        {
+            cursor.moveToNext();
+            if(movie.equals(cursor.getString(2)))
+            {
+                break;
+            }
+            movie = cursor.getString(2);
+        }
+        starB = cursor.getString(5) + " " + cursor.getString(6);
+        cursor.moveToPrevious();
+        starA = cursor.getString(5) + " " + cursor.getString(6);
+        for(int i = 0; i<4; i++)
+        {
+            if(i==correctAnswer)
+            {
+                choicesList.get(i).setText(movie.replace("\"", ""));
+            }
+            else
+            {
+                if(cursor.getPosition()+20 > cursorCount)
+                {
+                    cursor.move(-200);
+                }
+                cursor.moveToPosition(cursor.getPosition()+20);
+                choicesList.get(i).setText(cursor.getString(2).replace("\"", ""));
+            }
+        }
+        q.setText("Which movie was " + starA.replace("\"", "") + "and " + starB.replace("\"", "") + "appear together?");
+    }
+
+    private void question4()
+    {
+        Random r = new Random();
+        cursor = db.groupByStar();
+        cursor.moveToPosition(r.nextInt(cursorCount));
+        int originalPos = cursor.getPosition();
+        q.setText("Who directed " + cursor.getString(5).replace("\"", "") + " " + cursor.getString(6).replace("\"", "") + "?");
+        for(int i = 0; i<4; i++)
+        {
+            if(correctAnswer == i)
+            {
+                cursor.moveToPosition(originalPos);
+            }
+            else
+            {
+                while(cursor.getPosition()+30 > cursorCount)
+                {
+                    cursor.move(-250);
+                }
+                cursor.move(20);
+            }
+            choicesList.get(i).setText(cursor.getString(4).replace("\"", ""));
+        }
+    }
+
+    private void question5()
+    {
+        Random r = new Random();
+        cursor = db.groupByStar();
+        cursor.moveToPosition(r.nextInt(cursorCount));
+        String star = cursor.getString(5) + " " + cursor.getString(6);
+
+        while(true && !cursor.isAfterLast())
+        {
+            cursor.moveToNext();
+            if((cursor.getString(5) + " " + cursor.getString(6)).equals(star))
+            {
+                break;
+            }
+            star = cursor.getString(5) + " " + cursor.getString(6);
+        }
+
+        String movieA = cursor.getString(2).replace("\"", "");
+        cursor.moveToPrevious();
+        String movieB = cursor.getString(2).replace("\"", "");
+
+        q.setText("Which star appears in both  " + movieA + "and " + movieB + "?");
+
+        int originalPos = cursor.getPosition();
+        for(int i = 0; i< 4; i++)
+        {
+            if(correctAnswer == i)
+            {
+               choicesList.get(i).setText(star.replace("\"", ""));
+            }
+            else
+            {
+                if(cursor.getPosition()+15 > cursorCount)
+                {
+                    cursor.move(-270);
+                }
+                cursor.move(15);
+                choicesList.get(i).setText((cursor.getString(5) + " " + cursor.getString(6)).replace("\"", ""));
+            }
+        }
+    }
+
+    private void question6()
+    {
+        Random r = new Random();
+        cursor = db.groupByMovie();
+        cursor.moveToPosition(r.nextInt(cursorCount));
+        String movie = cursor.getString(2);
+        String star = cursor.getString(5) + " " + cursor.getString(6);
+        String[] stars = new String[3];
+        boolean notFound = true;
+        while(notFound)
+        {
+            cursor.moveToNext();
+            if(cursor.isAfterLast())
+            {
+                cursor.moveToFirst();
+            }
+            for(int i = 0; i<3; i++)
+            {
+                if(cursor.getString(2).equals(movie))
+                {
+                    stars[i] = cursor.getString(5) + " " + cursor.getString(6);
+                }
+                else
+                {
+                    break;
+                }
+                if(i==3)
+                {
+                    notFound = false;
+                }
+            }
+            movie = cursor.getString(2);
+        }
+        q.setText("Which star did not appear in the same movie with " + star.replace("\"", "") + "?");
+
+        int count = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            if(correctAnswer == i)
+            {
+                cursor.moveToPosition(r.nextInt(cursorCount));
+                choicesList.get(i).setText((cursor.getString(5) + " " + cursor.getString(6)).replace("\"", ""));
+            }
+            else
+            {
+                choicesList.get(i).setText(stars[count].replace("\"", ""));
+                count++;
+            }
+        }
+    }
+
+    private void question7()
+    {
+        q.setText("Who directed " + cursor.getString(5).replace("\"", "") + " " + cursor.getString(6).replace("\"", "") + " in year " + String.valueOf(cursor.getInt(3)) + "?");
+        int ori = cursor.getPosition();
+        for(int i = 0; i < 4; i++)
+        {
+            if(correctAnswer == i)
+            {
+                cursor.moveToPosition(ori);
+            }
+            else
+            {
+                if(cursor.getPosition()+10 > cursorCount)
+                {
+                    cursor.move(-100);
+                }
+                cursor.move(10);
+            }
+            choicesList.get(i).setText(cursor.getString(4).replace("\"", ""));
         }
     }
 
