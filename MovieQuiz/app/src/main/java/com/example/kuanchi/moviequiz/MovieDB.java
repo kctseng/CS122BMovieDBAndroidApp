@@ -19,7 +19,7 @@ public class MovieDB extends SQLiteOpenHelper
 {
     public static String CREATE_TABLE = "Create table movieinfo (entryID integer primary key AUTOINCREMENT, starID integer, movieID integer, movietitle varchar(350), year integer, director varchar(150), starFirstName varchar(50), starLastName varchar(50));";
 
-    public static String FILE_NAME = "all.csv";
+    public static String FILE_NAME = "all2.csv";
     public static String TABLE_NAME="movieinfo";
     public static String DATABASE_NAME ="movieDB";
     public static int DATABASE_VERSION = 1;
@@ -31,13 +31,11 @@ public class MovieDB extends SQLiteOpenHelper
     {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
         context = ctx;
-        columnNames[0] = "starID";
-        columnNames[1] = "movieID";
-        columnNames[2] = "movietitle";
-        columnNames[3] = "year";
-        columnNames[4] = "director";
-        columnNames[5] = "starFirstName";
-        columnNames[6] = "starLastName";
+        columnNames[0] = "movietitle";
+        columnNames[1] = "year";
+        columnNames[2] = "director";
+        columnNames[3] = "starFirstName";
+        columnNames[4] = "starLastName";
         this.db = getWritableDatabase();
     }
 
@@ -53,11 +51,11 @@ public class MovieDB extends SQLiteOpenHelper
             {
                 int count = 0;
                 Scanner sc = new Scanner(line);
-                sc.useDelimiter(",");
+                sc.useDelimiter("%");
                 ContentValues values = new ContentValues();
                 values.put("entryID", eid);
                 eid++;
-                while(sc.hasNext() && count!=7) {
+                while(sc.hasNext() && count!=5) {
                     String value = sc.next();
                     values.put(columnNames[count], value);
                     count++;
