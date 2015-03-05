@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.os.SystemClock;
+import android.os.Handler;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -19,6 +21,10 @@ import java.util.Random;
 public class QuizActivity extends Activity
 {
     int correctAnswer = 0;
+    private TextView mTimeLabel;
+    private Handler mHandler = new Handler();
+    private long mStart;
+    private static final long duration = 180000;
     int correct = 0;
     int wrong = 0;
     int totalQ = 0;
@@ -27,12 +33,77 @@ public class QuizActivity extends Activity
     ArrayList<Button> choicesList = new ArrayList<Button>();
     Cursor cursor;
     TextView q;
+    boolean timerPause = false;
+
+    private Runnable updateTask = new Runnable() {
+        public void run() {
+            long now = SystemClock.uptimeMillis();
+            long elapsed = duration - (now - mStart);
+
+            if (elapsed > 0)
+            {
+                int seconds = (int) (elapsed / 1000);
+                int minutes = seconds / 60;
+                seconds     = seconds % 60;
+
+                if (seconds < 10) {
+                    mTimeLabel.setText("" + minutes + ":0" + seconds);
+                } else {
+                    mTimeLabel.setText("" + minutes + ":" + seconds);
+                }
+
+                mHandler.postAtTime(this, now + 1000);
+            }
+            else {
+                mHandler.removeCallbacks(this);
+                finish();
+                Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
+                intent.putExtra("total", totalQ);
+                intent.putExtra("correct", correct);
+                intent.putExtra("wrong", wrong);
+                startActivity(intent);
+            }
+        }
+    };
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        timerPause = true;
+    }
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        timerPause = false;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        timerPause = false;
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        timerPause = true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
         db = new MovieDB(this);
         q = (TextView)findViewById(R.id.question);
+        mTimeLabel = (TextView)findViewById(R.id.clock);
+        mStart = SystemClock.uptimeMillis();
+        mHandler.post(updateTask);
+
         Button b1 = (Button)findViewById(R.id.choice1);
         Button b2 = (Button)findViewById(R.id.choice2);
         Button b3 = (Button)findViewById(R.id.choice3);
@@ -148,7 +219,7 @@ public class QuizActivity extends Activity
                 {
                     cursor.move(-200);
                 }
-                cursor.moveToPosition(cursor.getPosition()+jump);
+                cursor.moveToPosition(cursor.getPosition() + jump);
             }
             choicesList.get(i).setText(cursor.getString(5).replace("\"", "")+" " + cursor.getString(6).replace("\"", ""));
         }
@@ -358,6 +429,7 @@ public class QuizActivity extends Activity
         intent.putExtra("total", totalQ);
         intent.putExtra("correct", correct);
         intent.putExtra("wrong", wrong);
+        mHandler.removeCallbacks(updateTask);
         startActivity(intent);
 
     }
