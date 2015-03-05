@@ -48,13 +48,15 @@ public class MovieDB extends SQLiteOpenHelper
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(context.getAssets().open(FILE_NAME)));
             String line;
-
+            int eid = 1;
             while((line=in.readLine())!=null)
             {
                 int count = 0;
                 Scanner sc = new Scanner(line);
                 sc.useDelimiter(",");
                 ContentValues values = new ContentValues();
+                values.put("entryID", eid);
+                eid++;
                 while(sc.hasNext() && count!=7) {
                     String value = sc.next();
                     values.put(columnNames[count], value);
@@ -83,11 +85,11 @@ public class MovieDB extends SQLiteOpenHelper
 
     public Cursor groupByStar()
     {
-        return db.rawQuery("select * from movieinfo order by starFirstName, starLastName asc", null);
+        return db.query(TABLE_NAME, columnNames, null, null, null, null, "starLastName", null);
     }
 
     public Cursor groupByMovie()
     {
-        return db.rawQuery("select * from movieinfo order by movietitle asc", null);
+        return db.query(TABLE_NAME, columnNames, null, null, null, null, "movietitle", null);
     }
 }
