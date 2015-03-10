@@ -13,6 +13,7 @@ import android.os.SystemClock;
 import android.os.Handler;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 /**
@@ -206,6 +207,7 @@ public class QuizActivity extends Activity
         q.setText("Which star was in the movie " + cursor.getString(0) + "?");
         int originalPos = cursor.getPosition();
         Random r = new Random();
+        HashSet<String> choices = new HashSet<String>();
         for(int i = 0; i<4; i++)
         {
             if(i==correctAnswer)
@@ -221,7 +223,13 @@ public class QuizActivity extends Activity
                 }
                 cursor.moveToPosition(cursor.getPosition() + jump);
             }
-            choicesList.get(i).setText(cursor.getString(3).replace("\"", "")+" " + cursor.getString(4).replace("\"", ""));
+            while(choices.contains(cursor.getString(3).replace("\"", "")+" " + cursor.getString(4).replace("\"", "")))
+            {
+                cursor.move(1);
+            }
+            String text = cursor.getString(3).replace("\"", "")+" " + cursor.getString(4).replace("\"", "");
+            choices.add(text);
+            choicesList.get(i).setText(text);
         }
     }
 
@@ -243,11 +251,19 @@ public class QuizActivity extends Activity
         starB = cursor.getString(3) + " " + cursor.getString(4);
         cursor.moveToPrevious();
         starA = cursor.getString(3) + " " + cursor.getString(4);
+        if(starA.equals(starB))
+        {
+            question3();
+            return;
+        }
+        HashSet<String> choices = new HashSet<String>();
+        movie = movie.replace("\"", "");
+        choices.add(movie);
         for(int i = 0; i<4; i++)
         {
             if(i==correctAnswer)
             {
-                choicesList.get(i).setText(movie.replace("\"", ""));
+                choicesList.get(i).setText(movie);
             }
             else
             {
@@ -256,7 +272,13 @@ public class QuizActivity extends Activity
                     cursor.move(-200);
                 }
                 cursor.moveToPosition(cursor.getPosition()+20);
-                choicesList.get(i).setText(cursor.getString(0).replace("\"", ""));
+                while(choices.contains(cursor.getString(0).replace("\"", "")))
+                {
+                    cursor.move(1);
+                }
+                String text = cursor.getString(0).replace("\"", "");
+                choices.add(text);
+                choicesList.get(i).setText(text);
             }
         }
         q.setText("Which movie was " + starA.replace("\"", "") + " and " + starB.replace("\"", "") + " appear together?");
@@ -268,6 +290,8 @@ public class QuizActivity extends Activity
         cursor = db.groupByStar();
         cursor.moveToPosition(r.nextInt(cursorCount));
         int originalPos = cursor.getPosition();
+        HashSet<String> choices = new HashSet<String>();
+        choices.add(cursor.getString(2).replace("\"", ""));
         q.setText("Which director directed " + cursor.getString(3).replace("\"", "") + " " + cursor.getString(4).replace("\"", "") + " before?");
         for(int i = 0; i<4; i++)
         {
@@ -282,8 +306,14 @@ public class QuizActivity extends Activity
                     cursor.move(-250);
                 }
                 cursor.move(20);
+                while(choices.contains(cursor.getString(2).replace("\"", "")))
+                {
+                    cursor.move(1);
+                }
             }
-            choicesList.get(i).setText(cursor.getString(2).replace("\"", ""));
+            String text = cursor.getString(2).replace("\"", "");
+            choicesList.get(i).setText(text);
+            choices.add(text);
         }
     }
 
@@ -310,12 +340,14 @@ public class QuizActivity extends Activity
 
         q.setText("Which star appears in both " + movieA + " and " + movieB + "?");
 
-        int originalPos = cursor.getPosition();
+        HashSet<String> choices = new HashSet<String>();
+        String c = star.replace("\"", "");
+        choices.add(c);
         for(int i = 0; i< 4; i++)
         {
             if(correctAnswer == i)
             {
-               choicesList.get(i).setText(star.replace("\"", ""));
+               choicesList.get(i).setText(c);
             }
             else
             {
@@ -324,7 +356,13 @@ public class QuizActivity extends Activity
                     cursor.move(-270);
                 }
                 cursor.move(15);
-                choicesList.get(i).setText((cursor.getString(3) + " " + cursor.getString(4)).replace("\"", ""));
+                while(choices.contains((cursor.getString(3) + " " + cursor.getString(4)).replace("\"", "")))
+                {
+                    cursor.move(1);
+                }
+                String text = (cursor.getString(3) + " " + cursor.getString(4)).replace("\"", "");
+                choices.add(text);
+                choicesList.get(i).setText(text);
             }
         }
     }
@@ -337,6 +375,8 @@ public class QuizActivity extends Activity
         String movie = cursor.getString(0);
         String star = cursor.getString(3) + " " + cursor.getString(4);
         String[] stars = new String[3];
+        HashSet<String> choices = new HashSet<String>();
+        choices.add(star);
         boolean notFound = true;
         while(notFound)
         {
@@ -347,7 +387,7 @@ public class QuizActivity extends Activity
             }
             for(int i = 0; i<3; i++)
             {
-                if(cursor.getString(0).equals(movie))
+                if(cursor.getString(0).equals(movie) && !choices.contains(cursor.getString(3) + " " + cursor.getString(4)))
                 {
                     stars[i] = cursor.getString(3) + " " + cursor.getString(4);
                     cursor.moveToNext();
@@ -367,14 +407,18 @@ public class QuizActivity extends Activity
             }
             movie = cursor.getString(0);
         }
-        q.setText("Which star did not appear in the same movie with " + star.replace("\"", "") + "?");
+        star = star.replace("\"", "");
+        q.setText("Which star did not appear in the same movie with " + star + "?");
 
         int count = 0;
         for(int i = 0; i < 4; i++)
         {
             if(correctAnswer == i)
             {
-                cursor.moveToPosition(r.nextInt(cursorCount));
+                while(choices.contains(cursor.getString(3) + " " + cursor.getString(4)))
+                {
+                    cursor.moveToPosition(r.nextInt(cursorCount));
+                }
                 choicesList.get(i).setText((cursor.getString(3) + " " + cursor.getString(4)).replace("\"", ""));
             }
             else
@@ -387,8 +431,10 @@ public class QuizActivity extends Activity
 
     private void question7()
     {
-        q.setText("Who directed " + cursor.getString(3).replace("\"", "") + " " + cursor.getString(4).replace("\"", "") + " in year " + String.valueOf(cursor.getInt(1)) + "?");
+        q.setText("Who directed the actor/actress " + cursor.getString(3).replace("\"", "") + " " + cursor.getString(4).replace("\"", "") + " in year " + String.valueOf(cursor.getInt(1)) + "?");
         int ori = cursor.getPosition();
+        HashSet<String> choices = new HashSet<String>();
+        choices.add(cursor.getString(2));
         for(int i = 0; i < 4; i++)
         {
             if(correctAnswer == i)
@@ -402,8 +448,14 @@ public class QuizActivity extends Activity
                     cursor.move(-200);
                 }
                 cursor.move(26);
+                while(choices.contains(cursor.getString(2)))
+                {
+                    cursor.move(1);
+                }
             }
-            choicesList.get(i).setText(cursor.getString(2).replace("\"", ""));
+            String text = cursor.getString(2);
+            choices.add(text);
+            choicesList.get(i).setText(text.replace("\"", ""));
         }
     }
 
