@@ -40,7 +40,7 @@ public class ResultActivity extends Activity
         }
         else
         {
-            ((TextView) findViewById(R.id.result)).setText("No Question Answered");
+            ((TextView) findViewById(R.id.result)).setText("You answered no questions.");
         }
     }
 

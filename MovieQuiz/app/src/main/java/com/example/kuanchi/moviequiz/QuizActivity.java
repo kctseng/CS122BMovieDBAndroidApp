@@ -321,7 +321,7 @@ public class QuizActivity extends Activity
                 choicesList.get(i).setText(text);
             }
         }
-        q.setText("Which movie was " + starA.replace("\"", "") + " and " + starB.replace("\"", "") + " appear together?");
+        q.setText("In which movie did " + starA.replace("\"", "") + " and " + starB.replace("\"", "") + " appear together?");
     }
 
     private void question4()
