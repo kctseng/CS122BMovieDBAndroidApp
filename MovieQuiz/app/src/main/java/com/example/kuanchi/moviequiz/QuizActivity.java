@@ -25,7 +25,7 @@ public class QuizActivity extends Activity
     private TextView mTimeLabel;
     private Handler mHandler = new Handler();
     private long mStart;
-    private static final long duration = 180000;
+    private long duration = 180000;
     int correct = 0;
     int wrong = 0;
     int totalQ = 0;
@@ -34,16 +34,18 @@ public class QuizActivity extends Activity
     ArrayList<Button> choicesList = new ArrayList<Button>();
     Cursor cursor;
     TextView q;
-    boolean timerPause = false;
+    double startTime = 0;
+    double endTime = 0;
+    long now;
+    long timeLeft;
 
     private Runnable updateTask = new Runnable() {
         public void run() {
-            long now = SystemClock.uptimeMillis();
-            long elapsed = duration - (now - mStart);
-
-            if (elapsed > 0)
+            now = SystemClock.uptimeMillis();
+            timeLeft = duration - now + mStart;
+            if (timeLeft > 0)
             {
-                int seconds = (int) (elapsed / 1000);
+                int seconds = (int) (timeLeft / 1000);
                 int minutes = seconds / 60;
                 seconds     = seconds % 60;
 
@@ -56,43 +58,84 @@ public class QuizActivity extends Activity
                 mHandler.postAtTime(this, now + 1000);
             }
             else {
+                endTime = 180000 - timeLeft;
                 mHandler.removeCallbacks(this);
                 finish();
                 Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
                 intent.putExtra("total", totalQ);
                 intent.putExtra("correct", correct);
                 intent.putExtra("wrong", wrong);
+                intent.putExtra("startTime", startTime);
+                intent.putExtra("endTime", endTime);
                 startActivity(intent);
             }
         }
     };
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        savedInstanceState.putString("Question", q.getText().toString());
+        savedInstanceState.putString("c1", choicesList.get(0).getText().toString());
+        savedInstanceState.putString("c2", choicesList.get(1).getText().toString());
+        savedInstanceState.putString("c3", choicesList.get(2).getText().toString());
+        savedInstanceState.putString("c4", choicesList.get(3).getText().toString());
+        savedInstanceState.putInt("total", totalQ);
+        savedInstanceState.putInt("correct", correct);
+        savedInstanceState.putDouble("endTime", 180000-timeLeft);
+        // etc.
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        totalQ = savedInstanceState.getInt("total");
+        correct = savedInstanceState.getInt("correct");
+        endTime = savedInstanceState.getDouble("endTime");
+        q.setText(savedInstanceState.getString("Question"));
+        choicesList.get(0).setText(savedInstanceState.getString("c1"));
+        choicesList.get(1).setText(savedInstanceState.getString("c2"));
+        choicesList.get(2).setText(savedInstanceState.getString("c3"));
+        choicesList.get(3).setText(savedInstanceState.getString("c4"));
+        endTime = savedInstanceState.getDouble("endTime");
+    }
+
+    @Override
     public void onPause()
     {
+        mHandler.removeCallbacks(updateTask);
         super.onPause();
-        timerPause = true;
     }
 
     @Override
     public void onRestart()
     {
         super.onRestart();
-        timerPause = false;
+        duration = timeLeft;
+        mStart = SystemClock.uptimeMillis();
+        mHandler.post(updateTask);
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        timerPause = false;
+        duration = timeLeft;
+        mStart = SystemClock.uptimeMillis();
+        mHandler.post(updateTask);
     }
 
     @Override
     public void onStop()
     {
+        mHandler.removeCallbacks(updateTask);
         super.onStop();
-        timerPause = true;
     }
 
     @Override
@@ -103,6 +146,7 @@ public class QuizActivity extends Activity
         q = (TextView)findViewById(R.id.question);
         mTimeLabel = (TextView)findViewById(R.id.clock);
         mStart = SystemClock.uptimeMillis();
+        startTime = SystemClock.uptimeMillis();
         mHandler.post(updateTask);
 
         Button b1 = (Button)findViewById(R.id.choice1);
@@ -235,27 +279,31 @@ public class QuizActivity extends Activity
 
     private void question3()
     {
+        cursor = db.groupByMovie();
+        Random r = new Random();
+        cursor.moveToPosition(r.nextInt(cursorCount-1));
         String starA = "";
         String starB = "";
         String movie = cursor.getString(0);
+        String s = cursor.getString(3) + " " + cursor.getString(4);
         cursor.moveToNext();
-        while(!cursor.getString(0).equals(movie))
+        if(cursor.isAfterLast())
+        {
+            cursor.moveToFirst();
+        }
+        while(!cursor.getString(0).equals(movie) || s.equals(cursor.getString(3) + " " + cursor.getString(4)))
         {
             movie = cursor.getString(0);
+            s = cursor.getString(3) + " " + cursor.getString(4);
             cursor.moveToNext();
             if(cursor.isAfterLast())
             {
                 cursor.moveToFirst();
             }
         }
-        starB = cursor.getString(3) + " " + cursor.getString(4);
+        starB = s;
         cursor.moveToPrevious();
         starA = cursor.getString(3) + " " + cursor.getString(4);
-        if(starA.equals(starB))
-        {
-            question3();
-            return;
-        }
         HashSet<String> choices = new HashSet<String>();
         movie = movie.replace("\"", "");
         choices.add(movie);
@@ -441,13 +489,12 @@ public class QuizActivity extends Activity
             {
                 cursor.moveToPosition(ori);
             }
-            else
-            {
-                if(cursor.getPosition()+26 > cursorCount)
-                {
-                    cursor.move(-200);
-                }
+            else {
                 cursor.move(26);
+                if (cursor.isAfterLast())
+                {
+                    cursor.move(-210);
+                }
                 while(choices.contains(cursor.getString(2)))
                 {
                     cursor.move(1);
@@ -481,14 +528,15 @@ public class QuizActivity extends Activity
 
     public void viewResult(View btn)
     {
+        endTime = duration - timeLeft;
         Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
         intent.putExtra("total", totalQ);
         intent.putExtra("correct", correct);
         intent.putExtra("wrong", wrong);
+        intent.putExtra("startTime", startTime);
+        intent.putExtra("endTime", endTime);
         mHandler.removeCallbacks(updateTask);
         startActivity(intent);
-
     }
-
 
 }

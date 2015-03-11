@@ -17,6 +17,8 @@ public class ResultActivity extends Activity
     int correct = 0;
     int wrong = 0;
     int total = 0;
+    double startTime = 0;
+    double endTime = 0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,11 +29,14 @@ public class ResultActivity extends Activity
             correct = extras.getInt("correct");
             total = extras.getInt("total");
             wrong = extras.getInt("wrong");
+            startTime = extras.getDouble("startTime");
+            endTime = extras.getDouble("endTime");
         }
 
         if(total!=0) {
             ((TextView) findViewById(R.id.result)).setText("You Got " + correct + "/" + total + " Correct!");
             ((TextView) findViewById(R.id.percent)).setText("Score: " + ((double)correct / (double)total)*100 + "/100");
+            ((TextView) findViewById(R.id.time)).setText("Average Time spent on each question: " + Math.round((((endTime) / total)/1000)*100)/100.0 + " Seconds");
         }
         else
         {
