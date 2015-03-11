@@ -109,13 +109,6 @@ public class QuizActivity extends Activity
         super.onPause();
     }
 
-    @Override
-    public void onRestart()
-    {
-        super.onRestart();
-
-        mHandler.post(updateTask);
-    }
 
     @Override
     public void onResume()
@@ -124,12 +117,6 @@ public class QuizActivity extends Activity
         mHandler.post(updateTask);
     }
 
-    @Override
-    public void onStop()
-    {
-        mHandler.removeCallbacks(updateTask);
-        super.onStop();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +126,7 @@ public class QuizActivity extends Activity
         q = (TextView)findViewById(R.id.question);
         mTimeLabel = (TextView)findViewById(R.id.clock);
 
-        mHandler.post(updateTask);
+
 
         Button b1 = (Button)findViewById(R.id.choice1);
         Button b2 = (Button)findViewById(R.id.choice2);
