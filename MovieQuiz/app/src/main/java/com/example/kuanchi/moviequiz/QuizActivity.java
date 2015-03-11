@@ -34,18 +34,15 @@ public class QuizActivity extends Activity
     ArrayList<Button> choicesList = new ArrayList<Button>();
     Cursor cursor;
     TextView q;
-    double startTime = 0;
-    double endTime = 0;
-    long now;
-    long timeLeft;
-    boolean firstTime = true;
+
+    long elapsed = 0;
 
 
     private Runnable updateTask = new Runnable() {
         public void run() {
-            now = SystemClock.uptimeMillis();
-            timeLeft = duration - (now - mStart);
-            if (timeLeft > 0)
+            long now = SystemClock.uptimeMillis();
+            long timeLeft = duration - elapsed;
+            if (elapsed < duration)
             {
                 int seconds = (int) (timeLeft / 1000);
                 int minutes = seconds / 60;
@@ -56,18 +53,17 @@ public class QuizActivity extends Activity
                 } else {
                     mTimeLabel.setText("" + minutes + ":" + seconds);
                 }
+                elapsed += 1000;
                 mHandler.postAtTime(this, now + 1000);
             }
             else {
-                endTime = duration - timeLeft;
+                elapsed = 0;
                 mHandler.removeCallbacks(this);
                 finish();
                 Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
                 intent.putExtra("total", totalQ);
                 intent.putExtra("correct", correct);
                 intent.putExtra("wrong", wrong);
-                intent.putExtra("startTime", startTime);
-                intent.putExtra("endTime", endTime);
                 startActivity(intent);
             }
         }
@@ -86,7 +82,7 @@ public class QuizActivity extends Activity
         savedInstanceState.putString("c4", choicesList.get(3).getText().toString());
         savedInstanceState.putInt("total", totalQ);
         savedInstanceState.putInt("correct", correct);
-        savedInstanceState.putDouble("endTime", 180000-timeLeft);
+        savedInstanceState.putLong("elapsed", elapsed);
         // etc.
     }
 
@@ -103,7 +99,7 @@ public class QuizActivity extends Activity
         choicesList.get(1).setText(savedInstanceState.getString("c2"));
         choicesList.get(2).setText(savedInstanceState.getString("c3"));
         choicesList.get(3).setText(savedInstanceState.getString("c4"));
-        endTime = savedInstanceState.getDouble("endTime");
+        elapsed = savedInstanceState.getLong("elapsed");
     }
 
     @Override
@@ -113,22 +109,11 @@ public class QuizActivity extends Activity
         super.onPause();
     }
 
-<<<<<<< HEAD
-    @Override
-    public void onRestart()
-    {
-        super.onRestart();
-        mStart = SystemClock.uptimeMillis() + timeLeft - duration;
-        mHandler.post(updateTask);
-    }
-=======
->>>>>>> origin/master
 
     @Override
     public void onResume()
     {
         super.onResume();
-        mStart = SystemClock.uptimeMillis();
         mHandler.post(updateTask);
     }
 
@@ -140,14 +125,8 @@ public class QuizActivity extends Activity
         db = new MovieDB(this);
         q = (TextView)findViewById(R.id.question);
         mTimeLabel = (TextView)findViewById(R.id.clock);
-<<<<<<< HEAD
-        mStart = SystemClock.uptimeMillis();
-        startTime = SystemClock.uptimeMillis();
-        mHandler.post(updateTask);
-=======
 
 
->>>>>>> origin/master
 
         Button b1 = (Button)findViewById(R.id.choice1);
         Button b2 = (Button)findViewById(R.id.choice2);
@@ -329,7 +308,7 @@ public class QuizActivity extends Activity
                 choicesList.get(i).setText(text);
             }
         }
-        q.setText("In which movie did " + starA.replace("\"", "") + " and " + starB.replace("\"", "") + " appear together?");
+        q.setText("Which movie was " + starA.replace("\"", "") + " and " + starB.replace("\"", "") + " appear together?");
     }
 
     private void question4()
