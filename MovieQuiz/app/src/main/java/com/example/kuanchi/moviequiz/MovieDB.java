@@ -17,7 +17,13 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MovieDB extends SQLiteOpenHelper
 {
-    public static String CREATE_TABLE = "Create table movieinfo (entryID integer primary key AUTOINCREMENT, starID integer, movieID integer, movietitle varchar(350), year integer, director varchar(150), starFirstName varchar(50), starLastName varchar(50));";
+    public static String CREATE_TABLE = "Create table movieinfo " +
+            "(entryID integer primary key AUTOINCREMENT, " +
+            "starID integer, movieID integer, " +
+            "movietitle varchar(350), year integer, " +
+            "director varchar(150), " +
+            "starFirstName varchar(50), " +
+            "starLastName varchar(50));";
 
     public static String FILE_NAME = "all2.csv";
     public static String TABLE_NAME="movieinfo";
