@@ -382,9 +382,9 @@ public class QuizActivity extends Activity
             }
         }
 
-        String movieA = cursor.getString(0).replace("\"", "");
+        String movieA = cursor.getString(0);
         cursor.moveToPrevious();
-        String movieB = cursor.getString(0).replace("\"", "");
+        String movieB = cursor.getString(0);
 
         q.setText("Which star appears in both " + movieA + " and " + movieB + "?");
 
