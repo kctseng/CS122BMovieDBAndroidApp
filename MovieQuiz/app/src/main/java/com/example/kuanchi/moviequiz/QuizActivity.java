@@ -25,7 +25,7 @@ public class QuizActivity extends Activity
     private TextView mTimeLabel;
     private Handler mHandler = new Handler();
     private long mStart;
-    private long duration = 180000;
+    private static final long duration = 180000;
     int correct = 0;
     int wrong = 0;
     int totalQ = 0;
@@ -38,6 +38,7 @@ public class QuizActivity extends Activity
     double endTime = 0;
     long now;
     long timeLeft;
+    boolean firstTime = true;
 
     private Runnable updateTask = new Runnable() {
         public void run() {
@@ -54,11 +55,10 @@ public class QuizActivity extends Activity
                 } else {
                     mTimeLabel.setText("" + minutes + ":" + seconds);
                 }
-
                 mHandler.postAtTime(this, now + 1000);
             }
             else {
-                endTime = 180000 - timeLeft;
+                endTime = duration - timeLeft;
                 mHandler.removeCallbacks(this);
                 finish();
                 Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
@@ -117,7 +117,6 @@ public class QuizActivity extends Activity
     public void onRestart()
     {
         super.onRestart();
-        duration = timeLeft;
         mStart = SystemClock.uptimeMillis();
         mHandler.post(updateTask);
     }
@@ -126,7 +125,6 @@ public class QuizActivity extends Activity
     public void onResume()
     {
         super.onResume();
-        duration = timeLeft;
         mStart = SystemClock.uptimeMillis();
         mHandler.post(updateTask);
     }
@@ -158,8 +156,9 @@ public class QuizActivity extends Activity
         this.choicesList.add(b3);
         this.choicesList.add(b4);
         this.cursor = db.fetchAll();
-        cursor.moveToFirst();
+        Random r = new Random();
         this.cursorCount = cursor.getCount();
+        cursor.move(r.nextInt(cursorCount-1));
         generateQuestionAndChoices();
     }
 
