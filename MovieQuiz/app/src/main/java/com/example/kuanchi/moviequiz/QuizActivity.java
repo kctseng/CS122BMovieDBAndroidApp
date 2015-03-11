@@ -43,7 +43,7 @@ public class QuizActivity extends Activity
     private Runnable updateTask = new Runnable() {
         public void run() {
             now = SystemClock.uptimeMillis();
-            timeLeft = duration - now + mStart;
+            timeLeft = duration - (now - mStart);
             if (timeLeft > 0)
             {
                 int seconds = (int) (timeLeft / 1000);
@@ -117,7 +117,7 @@ public class QuizActivity extends Activity
     public void onRestart()
     {
         super.onRestart();
-        mStart = SystemClock.uptimeMillis();
+        mStart = SystemClock.uptimeMillis() + timeLeft - duration;
         mHandler.post(updateTask);
     }
 
