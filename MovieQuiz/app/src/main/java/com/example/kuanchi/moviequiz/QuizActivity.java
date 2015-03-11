@@ -282,7 +282,6 @@ public class QuizActivity extends Activity
             }
         }
         starB = s;
-        cursor.moveToPrevious();
         starA = cursor.getString(3) + " " + cursor.getString(4);
         HashSet<String> choices = new HashSet<String>();
         movie = movie.replace("\"", "");
