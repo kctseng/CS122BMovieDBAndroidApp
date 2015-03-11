@@ -138,7 +138,7 @@ public class QuizActivity extends Activity {
 
     private void generateQuestionAndChoices() {
         Random random = new Random();
-        int format = random.nextInt(9);
+        int format = random.nextInt(10);
         int position = random.nextInt(cursorCount);
         correctAnswer = random.nextInt(4);
         switch (format) {
@@ -176,6 +176,10 @@ public class QuizActivity extends Activity {
                 break;
             case 8:
                 question8();
+                cursor.moveToPosition(position);
+                break;
+            case 9:
+                question9();
                 cursor.moveToPosition(position);
                 break;
         }
@@ -270,9 +274,12 @@ public class QuizActivity extends Activity {
         movie = movie.replace("\"", "");
         choices.add(movie);
         for (int i = 0; i < 4; i++) {
-            if (i == correctAnswer) {
+            if (i == correctAnswer)
+            {
                 choicesList.get(i).setText(movie);
-            } else {
+            }
+            else
+            {
                 if (cursor.getPosition() + 20 > cursorCount) {
                     cursor.move(-200);
                 }
@@ -340,13 +347,16 @@ public class QuizActivity extends Activity {
         for (int i = 0; i < 4; i++) {
             if (correctAnswer == i) {
                 choicesList.get(i).setText(c);
-            } else {
-                if (cursor.getPosition() + 15 > cursorCount) {
-                    cursor.move(-270);
-                }
-                cursor.move(15);
-                while (choices.contains((cursor.getString(3) + " " + cursor.getString(4)).replace("\"", ""))) {
+            }
+            else
+            {
+                while (choices.contains((cursor.getString(3) + " " + cursor.getString(4)).replace("\"", "")))
+                {
                     cursor.move(1);
+                    if(cursor.isAfterLast())
+                    {
+                        cursor.moveToFirst();
+                    }
                 }
                 String text = (cursor.getString(3) + " " + cursor.getString(4)).replace("\"", "");
                 choices.add(text);
@@ -471,6 +481,58 @@ public class QuizActivity extends Activity {
                     cursor.moveToPosition(r.nextInt(cursorCount));
                 }
                 choicesList.get(i).setText((cursor.getString(3) + " " + cursor.getString(4)).replace("\"", ""));
+            }
+            else
+            {
+                choicesList.get(i).setText(choices.get(count).replace("\"", ""));
+                count++;
+            }
+        }
+    }
+
+    public void question9()
+    {
+        cursor = db.groupByStar();
+        Random r = new Random();
+        cursor.moveToPosition(r.nextInt(cursorCount));
+        ArrayList<String> choices = new ArrayList<String>();
+        String star = "";
+        cursor.moveToNext();
+        while (choices.size() < 3)
+        {
+            star = cursor.getString(3) + " " + cursor.getString(4);
+            if(cursor.isAfterLast())
+            {
+                cursor.moveToFirst();
+                choices.clear();
+                continue;
+            }
+            choices.add(cursor.getString(2));
+            while(star.equals(cursor.getString(3) + " " + cursor.getString(4)))
+            {
+                String text = cursor.getString(2);
+                if(!choices.contains(text)) {
+                    choices.add(text);
+                }
+                cursor.moveToNext();
+            }
+            if(choices.size() < 3)
+            {
+                choices.clear();
+            }
+        }
+
+        q.setText("Which director did not direct the star " + star + "?");
+        int count = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            if(i == correctAnswer)
+            {
+                while(choices.contains(cursor.getString(2)))
+                {
+                    cursor.moveToPosition(r.nextInt(cursorCount));
+                }
+                choicesList.get(i).setText((cursor.getString(2).replace("\"", "")));
             }
             else
             {
