@@ -24,7 +24,7 @@ public class QuizActivity extends Activity
     int correctAnswer = 0;
     private TextView mTimeLabel;
     private Handler mHandler = new Handler();
-    private long mStart;
+
     private static final long duration = 180000;
     int correct = 0;
     int wrong = 0;
@@ -36,6 +36,7 @@ public class QuizActivity extends Activity
     TextView q;
 
     long elapsed = 0;
+
 
     private Runnable updateTask = new Runnable() {
         public void run() {
@@ -93,7 +94,6 @@ public class QuizActivity extends Activity
         // This bundle has also been passed to onCreate.
         totalQ = savedInstanceState.getInt("total");
         correct = savedInstanceState.getInt("correct");
-        endTime = savedInstanceState.getDouble("endTime");
         q.setText(savedInstanceState.getString("Question"));
         choicesList.get(0).setText(savedInstanceState.getString("c1"));
         choicesList.get(1).setText(savedInstanceState.getString("c2"));
@@ -113,6 +113,7 @@ public class QuizActivity extends Activity
     public void onRestart()
     {
         super.onRestart();
+
         mHandler.post(updateTask);
     }
 
@@ -520,13 +521,11 @@ public class QuizActivity extends Activity
 
     public void viewResult(View btn)
     {
-        endTime = duration - timeLeft;
         Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
         intent.putExtra("total", totalQ);
         intent.putExtra("correct", correct);
         intent.putExtra("wrong", wrong);
-        intent.putExtra("startTime", startTime);
-        intent.putExtra("endTime", endTime);
+        intent.putExtra("elapsed", elapsed);
         mHandler.removeCallbacks(updateTask);
         startActivity(intent);
     }
