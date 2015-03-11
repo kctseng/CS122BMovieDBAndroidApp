@@ -192,6 +192,8 @@ public class QuizActivity extends Activity
     {
         q.setText("Who directed the movie " + cursor.getString(0) + "?");
         int originalPos = cursor.getPosition();
+        HashSet<String> choices = new HashSet<String>();
+        choices.add(cursor.getString(2));
         for(int i = 0; i<4; i++)
         {
             if(i==correctAnswer)
@@ -205,8 +207,14 @@ public class QuizActivity extends Activity
                     cursor.move(-200);
                 }
                 cursor.moveToPosition(cursor.getPosition()+20);
+                while(choices.contains(cursor.getString(2)))
+                {
+                    cursor.moveToNext();
+                }
             }
-            choicesList.get(i).setText(cursor.getString(2).replace("\"",""));
+            String text = cursor.getString(2);
+            choicesList.get(i).setText(text.replace("\"",""));
+            choices.add(text);
         }
     }
 
