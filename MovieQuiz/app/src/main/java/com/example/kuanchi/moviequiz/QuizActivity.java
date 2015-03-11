@@ -54,13 +54,13 @@ public class QuizActivity extends Activity {
                 elapsed += 1000;
                 mHandler.postAtTime(this, now + 1000);
             } else {
-                elapsed = 0;
                 mHandler.removeCallbacks(this);
                 finish();
                 Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
                 intent.putExtra("total", totalQ);
                 intent.putExtra("correct", correct);
                 intent.putExtra("wrong", wrong);
+                intent.putExtra("elapsed", elapsed);
                 startActivity(intent);
             }
         }
@@ -522,7 +522,7 @@ public class QuizActivity extends Activity {
             }
         }
 
-        q.setText("Which director did not direct the star " + star + "?");
+        q.setText("Which director did not direct the star " + star.replace("\"", "") + "?");
         int count = 0;
         for(int i = 0; i < 4; i++)
         {
