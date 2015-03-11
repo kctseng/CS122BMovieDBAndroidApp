@@ -308,7 +308,7 @@ public class QuizActivity extends Activity
                 choicesList.get(i).setText(text);
             }
         }
-        q.setText("Which movie was " + starA.replace("\"", "") + " and " + starB.replace("\"", "") + " appear together?");
+        q.setText("In which movie did " + starA.replace("\"", "") + " and " + starB.replace("\"", "") + " appear together?");
     }
 
     private void question4()
@@ -436,7 +436,7 @@ public class QuizActivity extends Activity
             movie = cursor.getString(0);
         }
         star = star.replace("\"", "");
-        q.setText("Which star did not appear in the same movie with " + star + "?");
+        q.setText("Which star did not appear in a movie with " + star + "?");
 
         int count = 0;
         for(int i = 0; i < 4; i++)
