@@ -24,7 +24,7 @@ public class QuizActivity extends Activity
     int correctAnswer = 0;
     private TextView mTimeLabel;
     private Handler mHandler = new Handler();
-    private long mStart;
+
     private static final long duration = 180000;
     int correct = 0;
     int wrong = 0;
@@ -39,6 +39,7 @@ public class QuizActivity extends Activity
     long now;
     long timeLeft;
     boolean firstTime = true;
+
 
     private Runnable updateTask = new Runnable() {
         public void run() {
@@ -97,7 +98,6 @@ public class QuizActivity extends Activity
         // This bundle has also been passed to onCreate.
         totalQ = savedInstanceState.getInt("total");
         correct = savedInstanceState.getInt("correct");
-        endTime = savedInstanceState.getDouble("endTime");
         q.setText(savedInstanceState.getString("Question"));
         choicesList.get(0).setText(savedInstanceState.getString("c1"));
         choicesList.get(1).setText(savedInstanceState.getString("c2"));
@@ -113,6 +113,7 @@ public class QuizActivity extends Activity
         super.onPause();
     }
 
+<<<<<<< HEAD
     @Override
     public void onRestart()
     {
@@ -120,6 +121,8 @@ public class QuizActivity extends Activity
         mStart = SystemClock.uptimeMillis() + timeLeft - duration;
         mHandler.post(updateTask);
     }
+=======
+>>>>>>> origin/master
 
     @Override
     public void onResume()
@@ -129,12 +132,6 @@ public class QuizActivity extends Activity
         mHandler.post(updateTask);
     }
 
-    @Override
-    public void onStop()
-    {
-        mHandler.removeCallbacks(updateTask);
-        super.onStop();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,9 +140,14 @@ public class QuizActivity extends Activity
         db = new MovieDB(this);
         q = (TextView)findViewById(R.id.question);
         mTimeLabel = (TextView)findViewById(R.id.clock);
+<<<<<<< HEAD
         mStart = SystemClock.uptimeMillis();
         startTime = SystemClock.uptimeMillis();
         mHandler.post(updateTask);
+=======
+
+
+>>>>>>> origin/master
 
         Button b1 = (Button)findViewById(R.id.choice1);
         Button b2 = (Button)findViewById(R.id.choice2);
@@ -527,13 +529,11 @@ public class QuizActivity extends Activity
 
     public void viewResult(View btn)
     {
-        endTime = duration - timeLeft;
         Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
         intent.putExtra("total", totalQ);
         intent.putExtra("correct", correct);
         intent.putExtra("wrong", wrong);
-        intent.putExtra("startTime", startTime);
-        intent.putExtra("endTime", endTime);
+        intent.putExtra("elapsed", elapsed);
         mHandler.removeCallbacks(updateTask);
         startActivity(intent);
     }
