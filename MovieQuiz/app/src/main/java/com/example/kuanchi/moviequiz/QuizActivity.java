@@ -417,6 +417,7 @@ public class QuizActivity extends Activity
                 if(cursor.getString(0).equals(movie) && !choices.contains(cursor.getString(3) + " " + cursor.getString(4)))
                 {
                     stars[i] = cursor.getString(3) + " " + cursor.getString(4);
+                    choices.add(stars[i]);
                     cursor.moveToNext();
                     if(cursor.isAfterLast())
                     {
@@ -446,7 +447,9 @@ public class QuizActivity extends Activity
                 {
                     cursor.moveToPosition(r.nextInt(cursorCount));
                 }
-                choicesList.get(i).setText((cursor.getString(3) + " " + cursor.getString(4)).replace("\"", ""));
+                String text = (cursor.getString(3) + " " + cursor.getString(4)).replace("\"", "");
+                choices.add(text);
+                choicesList.get(i).setText(text);
             }
             else
             {
