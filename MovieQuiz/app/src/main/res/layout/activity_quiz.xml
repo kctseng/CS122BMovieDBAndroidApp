@@ -12,7 +12,7 @@
         android:layout_centerHorizontal="true"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/choice1"
         android:layout_marginTop="250dp"
@@ -22,7 +22,7 @@
         android:tag ="c1"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/choice2"
         android:layout_marginTop="300dp"
@@ -32,7 +32,7 @@
         android:tag ="c2"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/choice3"
         android:layout_marginTop="350dp"
@@ -42,7 +42,7 @@
         android:tag ="c3"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/choice4"
         android:layout_marginTop="400dp"
@@ -60,7 +60,7 @@
         android:layout_centerHorizontal="true"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"

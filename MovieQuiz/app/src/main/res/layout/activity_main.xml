@@ -20,7 +20,7 @@
     <Button
         android:id = "@+id/StartBtn"
         android:text = "Take The Quiz"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_marginTop="300dp"
         android:layout_centerHorizontal="true"
