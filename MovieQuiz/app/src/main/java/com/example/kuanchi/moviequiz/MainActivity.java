@@ -54,7 +54,8 @@ public class MainActivity extends Activity {
     }
     public void viewStats (View view)
     {
-
+        Intent intent = new Intent(MainActivity.this, StatActivity.class);
+        startActivity(intent);
     }
 
 }

@@ -101,6 +101,9 @@ public class QuizActivity extends Activity {
     @Override
     public void onPause() {
         mHandler.removeCallbacks(updateTask);
+
+
+
         super.onPause();
     }
 

@@ -13,7 +13,7 @@ import android.widget.TextView;
 /**
  * Created by Kuanchi on 3/3/2015.
  */
-public class ResultActivity extends Activity
+public class StatActivity extends Activity
 {
     int correct = 0;
     int wrong = 0;
@@ -25,30 +25,16 @@ public class ResultActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-        Bundle extras = getIntent().getExtras();
-        if(extras != null)
-        {
-            correct = extras.getInt("correct");
-            total = extras.getInt("total");
-            wrong = extras.getInt("wrong");
-            elapsed = extras.getLong("elapsed");
-        }
+
 
 
         SharedPreferences settings = getSharedPreferences("history", 0);
 
-        int oldtotal = settings.getInt("total", 0);
-        int oldwrong = settings.getInt("wrong", 0);
-        int oldcorrect = settings.getInt("correct", 0);
-        long oldelapsed = settings.getLong("elapsed", 0);
+        total = settings.getInt("total", 0);
+        wrong = settings.getInt("wrong", 0);
+        correct = settings.getInt("correct", 0);
+        elapsed = settings.getLong("elapsed", 0);
 
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("total", oldtotal + total);
-        editor.putInt("correct", oldcorrect + correct);
-        editor.putInt("wrong", oldwrong + wrong);
-        editor.putLong("elapsed", oldelapsed + elapsed);
-        // Commit the edits!
-        editor.commit();
 
         if(total!=0) {
             ((TextView) findViewById(R.id.result)).setText("You Got " + correct + "/" + total + " Correct!");
@@ -63,7 +49,7 @@ public class ResultActivity extends Activity
 
     public void restart(View btn)
     {
-        Intent intent = new Intent(ResultActivity.this, MainActivity.class);
+        Intent intent = new Intent(StatActivity.this, MainActivity.class);
         startActivity(intent);
     }
 
