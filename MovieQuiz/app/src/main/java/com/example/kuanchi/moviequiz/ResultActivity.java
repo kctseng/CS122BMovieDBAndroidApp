@@ -44,19 +44,20 @@ public class ResultActivity extends Activity
         Cursor cursor = db.getStat();
         while(cursor.moveToNext())
         {
-            wrong += cursor.getInt(cursor.getColumnIndex("wrong"));
-            correct += cursor.getInt(cursor.getColumnIndex("correct"));
-            total += cursor.getInt(cursor.getColumnIndex("total"));
-            elapsed += cursor.getInt(cursor.getColumnIndex("elapsed"));
+            int newwrong = wrong + cursor.getInt(cursor.getColumnIndex("wrong"));
+            int newcorrect = correct +  cursor.getInt(cursor.getColumnIndex("correct"));
+            int newtotal = total + cursor.getInt(cursor.getColumnIndex("total"));
+            long newelapsed  =  elapsed + cursor.getInt(cursor.getColumnIndex("elapsed"));
+            ContentValues statContent = new ContentValues();
+            statContent.put("wrong", newwrong);
+            statContent.put("correct", newcorrect);
+            statContent.put("total", newtotal);
+            statContent.put("elapsed", newelapsed);
+            db.updateStat(statContent);
             break;
         }
 
-        ContentValues statContent = new ContentValues();
-        statContent.put("wrong", wrong);
-        statContent.put("correct", correct);
-        statContent.put("total", total);
-        statContent.put("elapsed", elapsed);
-        db.updateStat(statContent);
+
 
         //SharedPreferences settings = getSharedPreferences("history", 0);
 
