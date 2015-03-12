@@ -27,6 +27,14 @@
         android:layout_centerHorizontal="true"
         android:onClick="startQuiz"/>
 
+    <Button
+        android:id = "@+id/Stats"
+        android:text = "View All Stats"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="300dp"
+        android:layout_centerHorizontal="true"
+        android:onClick="viewStats"/>
 
 
 </RelativeLayout>

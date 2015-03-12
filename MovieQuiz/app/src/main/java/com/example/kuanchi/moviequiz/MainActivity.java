@@ -52,5 +52,9 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(MainActivity.this, QuizActivity.class);
         startActivity(intent);
     }
+    public void viewStats (View view)
+    {
+
+    }
 
 }
