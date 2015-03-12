@@ -3,6 +3,7 @@ package com.example.kuanchi.moviequiz;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,19 +22,29 @@ public class StatActivity extends Activity
     long elapsed = 0;
 
 
-
+    MovieDB db;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
+        db = new MovieDB(this);
 
+        Cursor cursor = db.getStat();
+        while(cursor.moveToNext())
+        {
+            wrong = cursor.getInt(cursor.getColumnIndex("wrong"));
+            correct = cursor.getInt(cursor.getColumnIndex("correct"));
+            total = cursor.getInt(cursor.getColumnIndex("total"));
+            elapsed = cursor.getInt(cursor.getColumnIndex("elapsed"));
+            break;
+        }
 
-        SharedPreferences settings = getSharedPreferences("history", 0);
-
-        total = settings.getInt("total", 0);
-        wrong = settings.getInt("wrong", 0);
-        correct = settings.getInt("correct", 0);
-        elapsed = settings.getLong("elapsed", 0);
+//        SharedPreferences settings = getSharedPreferences("history", 0);
+//
+//        total = settings.getInt("total", 0);
+//        wrong = settings.getInt("wrong", 0);
+//        correct = settings.getInt("correct", 0);
+//        elapsed = settings.getLong("elapsed", 0);
 
 
         if(total!=0) {

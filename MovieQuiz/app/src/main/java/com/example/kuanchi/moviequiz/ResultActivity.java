@@ -1,8 +1,10 @@
 package com.example.kuanchi.moviequiz;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,10 +22,13 @@ public class ResultActivity extends Activity
     int total = 0;
     long elapsed = 0;
 
-
+    MovieDB db;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = new MovieDB(this);
+
         setContentView(R.layout.activity_result);
         Bundle extras = getIntent().getExtras();
         if(extras != null)
@@ -35,20 +40,35 @@ public class ResultActivity extends Activity
         }
 
 
-        SharedPreferences settings = getSharedPreferences("history", 0);
 
-        int oldtotal = settings.getInt("total", 0);
-        int oldwrong = settings.getInt("wrong", 0);
-        int oldcorrect = settings.getInt("correct", 0);
-        long oldelapsed = settings.getLong("elapsed", 0);
+        Cursor cursor = db.getStat();
+        while(cursor.moveToNext())
+        {
+            wrong += cursor.getInt(cursor.getColumnIndex("wrong"));
+            correct += cursor.getInt(cursor.getColumnIndex("correct"));
+            total += cursor.getInt(cursor.getColumnIndex("total"));
+            elapsed += cursor.getInt(cursor.getColumnIndex("elapsed"));
+            break;
+        }
 
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("total", oldtotal + total);
-        editor.putInt("correct", oldcorrect + correct);
-        editor.putInt("wrong", oldwrong + wrong);
-        editor.putLong("elapsed", oldelapsed + elapsed);
-        // Commit the edits!
-        editor.commit();
+        ContentValues statContent = new ContentValues();
+        statContent.put("wrong", wrong);
+        statContent.put("correct", correct);
+        statContent.put("total", total);
+        statContent.put("elapsed", elapsed);
+        db.updateStat(statContent);
+
+        //SharedPreferences settings = getSharedPreferences("history", 0);
+
+
+
+//        SharedPreferences.Editor editor = settings.edit();
+//        editor.putInt("total", oldtotal + total);
+//        editor.putInt("correct", oldcorrect + correct);
+//        editor.putInt("wrong", oldwrong + wrong);
+//        editor.putLong("elapsed", oldelapsed + elapsed);
+//        // Commit the edits!
+//        editor.commit();
 
         if(total!=0) {
             ((TextView) findViewById(R.id.result)).setText("You Got " + correct + "/" + total + " Correct!");

@@ -25,14 +25,20 @@ public class MovieDB extends SQLiteOpenHelper
             "starFirstName varchar(50), " +
             "starLastName varchar(50));";
 
+    public static String CREATE_STAT_TABLE = "Create table stat " +
+            "(entryID integer primary key AUTOINCREMENT, " +
+            "correct integer, wrong integer, total integer, elapsed integer);";
+
     public static String FILE_NAME = "all2.csv";
     public static String TABLE_NAME="movieinfo";
+    public static String STAT_TABLE_NAME="stat";
+
     public static String DATABASE_NAME ="movieDB";
     public static int DATABASE_VERSION = 1;
     public SQLiteDatabase db;
     public Context context;
     public String[] columnNames = new String[7];
-
+    public String[] statColumnNames = new String[4];
     public MovieDB(Context ctx)
     {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,12 +48,26 @@ public class MovieDB extends SQLiteOpenHelper
         columnNames[2] = "director";
         columnNames[3] = "starFirstName";
         columnNames[4] = "starLastName";
+        statColumnNames[0] = "wrong";
+        statColumnNames[1] = "correct";
+        statColumnNames[2] = "total";
+        statColumnNames[3] = "elapsed";
+
         this.db = getWritableDatabase();
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE);
+        db.execSQL(CREATE_STAT_TABLE);
+        ContentValues statContent = new ContentValues();
+        statContent.put("wrong", 0);
+        statContent.put("correct", 0);
+        statContent.put("total", 0);
+        statContent.put("elapsed", 0);
+
+
+        db.insert(STAT_TABLE_NAME, null,statContent);
         // populate database
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(context.getAssets().open(FILE_NAME)));
@@ -77,12 +97,23 @@ public class MovieDB extends SQLiteOpenHelper
 
     }
 
+
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + STAT_TABLE_NAME);
         onCreate(db);
     }
 
+    public Cursor getStat(){
+
+        return db.query(STAT_TABLE_NAME, statColumnNames, null, null, null, null, null);
+    }
+
+    public void updateStat(ContentValues values){
+        db.update(STAT_TABLE_NAME, values, null, null);
+    }
     public Cursor fetchAll() {
         return db.query(TABLE_NAME, columnNames, null, null, null, null, null);
     }
